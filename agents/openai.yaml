@@ -1,0 +1,4 @@
+interface:
+  display_name: "Poteto Review（土豆姐审阅）"
+  short_description: "以 Lauren Tan (@poteto) 信任倒金字塔与六把手术刀进行只读工程审阅"
+  default_prompt: "Use $poteto-review to audit this codebase, diff, verification setup, or agent workflow with Lauren Tan's (@poteto) diagnostic review lens."
