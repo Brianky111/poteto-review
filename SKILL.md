@@ -15,7 +15,8 @@ description: >-
 ## 审阅姿态与边界
 
 - **默认只读诊断（Non-Destructive）**：严禁修改被审仓库源码，仅交付带 `file:line` 证据与可执行建议的报告；仅在用户明确授权动手修复时改动，或交由执行型工作流（如 `general-workflow`）落地。
-- **区分可迁移方法论与场景特定决策**：始终执行倒金字塔下沉、去借口、先减后加与真实行为验证；绝不把特定项目决策（如 Dune 禁 `useEffect`、99% 禁注释、`electron-*` 拆分、全上 TLA+/Lean）脱离上下文硬套，边界详见 [`references/02-case-anchors-and-boundaries.md`](./references/02-case-anchors-and-boundaries.md)。
+- **直率反迎合（Candor over Sycophancy）**：*"No is an acceptable answer"*——当被审需求不值当、抽象未挣回复杂度或前提有误时，直接给出“拒绝合入 / 整笔撤回（doesn't earn its place）”的真实判断，不做礼貌附和。
+- **区分可迁移方法论与场景特定决策**：始终执行倒金字塔下沉、去借口、先减后加与真实行为验证；绝不把特定项目决策（如 Dune 禁 `useEffect`、99% 禁注释、`electron-*` 拆分、全上 TLA+/Lean）脱离上下文硬套；生产源码外隔离的抛弃式原型（`prototype`）豁免最小 Diff 与测试门禁，边界详见 [`references/02-case-anchors-and-boundaries.md`](./references/02-case-anchors-and-boundaries.md)。
 - **渐进披露，防守上下文**：先跑确定性雷达，再按模式只读相关范围与参考手册。
 
 ## 五步审阅流程
@@ -32,18 +33,17 @@ description: >-
 ## 六把审阅手术刀（Always-On Six Knives）
 
 1. **刀 1：信任倒金字塔下沉（Pyramid Downshift）**
-   确定性优先级：`Tier 1 架构/目录共置/防呆 API` > `Tier 2 强类型（非法状态不可表示、边界解析内部信任）与指明根因的 Lint` > `Tier 3 真实行为验证与确定性驱动 CLI` > `Tier 4 极薄散文（AGENTS.md / Rules / Skills）`。
-   能编码到前三层却滞留在散文或口头叮嘱里的规则一律判 `PROSE DEBT`，并给出下沉落点。
-2. **刀 2：修根因不打症状补丁（Root Cause over Symptom Guard）**
-   审视 `try/catch` 空吞、`??` 兜底、盲目重试、`setTimeout`/`rAF`/`sleep` 与数值截断——先问触发状态是否合法。非法态用防御判断是在藏 Bug。新需求按第一性原理重塑结构，而非外挂胶布。
-3. **刀 3：花园传染源与先减后加（Garden Contagion & Laziness Protocol）**
-   仓库是下一批 Agent 最大输入；残留 workaround、死代码、未同波删掉的兼容壳、单实现接口与 `>500` 行巨石文件会被迅速复制扩散。先问能删什么、合并什么、收敛到哪个单一权威源（SSOT）；最小 Diff 胜过冗余抽象。
+   确定性优先级：`Tier 1 架构/目录共置/防呆 API` > `Tier 2 强类型与根因 Lint` > `Tier 3 真行为验证与驱动 CLI` > `Tier 4 极薄散文`。能编码到前三层却滞留散文/口头叮嘱的规则判 `PROSE DEBT` 并指明下沉落点。
+2. **刀 2：修根因与质疑前提（Root Cause & Attack the Premise）**
+   审视 `try/catch` 空吞、`??` 兜底、重试、`setTimeout`/`rAF`/`sleep` 与截断——先问触发态是否合法，非法态防御是在藏 Bug。共享同一前提的修复连败 `>= 2` 次时停手写补丁，先写出并实测证伪该前提。新需求按第一性原理重塑而非外挂胶布。
+3. **刀 3：花园传染源、先减后加与降读者负担（Minimize Reader Load）**
+   仓库是下一批 Agent 最大输入；死代码、兼容壳、单实现接口与 `>500` 行巨石文件会传染扩散。先删减并收敛单一权威源；若新读者 30 秒内追不出值来源与修改点，或重构未减少追踪层数/可变状态即判撤回。多分支状态改用状态机或注册表（`model-the-domain`）。
 4. **刀 4：反借口注释与压制符审判（Comment-Sicko Lens）**
-   为补丁辩解的长注释、`for now`/`do not remove`/`too risky`/`HACK` 及逃避正确性检查的 `@ts-ignore`/`eslint-disable`/`# noqa`/`# type: ignore` 均视为认罪书。仅放行 5 类法定例外：许可证头、不可控外部依赖/协议怪癖、公共 API 契约文档、纯格式化忽略、代码无法表达的 Issue/RFC 链接。自码意外靠重命名、拆函数或类型消除注释。
-5. **刀 5：真行为证据与双编辑测试（Prove It Works & Two-Edit Test）**
-   拒绝“编译通过/单测绿/`/health` 200/口头自称已测”等代理指标。用双编辑测试审核心测试：破坏可观测行为必红，仅改内部实现必绿。应用改动追问用户视角 `feature-map`、确定性驱动 CLI 与可复查产物（截图/录屏/状态图/PBT/形式化）。
-6. **刀 6：内环优先、缓冲聚类与单双向门（Michelin Kitchen & One-Way Doors）**
-   内环未稳禁盲目并发或自动合入。当前 Diff 顺手发现的范围外旧债不混入当前分支，记入缓冲队列满 2 次共性模式再聚类拔根。明确区分有硬验证护航的**双向门**与必须人类拍板的**单向门**（权限、计费、迁移、密钥、破坏性操作）。
+   辩解性长注释、`for now`/`do not remove`/`too risky`/`HACK` 及逃避检查的 `@ts-ignore`/`eslint-disable`/`# noqa`/`# type: ignore` 均视为认罪书。仅放行 5 类例外：许可证、外部依赖/协议怪癖、公共 API 文档、纯格式化忽略、Issue/RFC 链接。
+5. **刀 5：真行为证据、双编辑测试与解释数字（Explain the Number）**
+   拒绝“编译过/单测绿/`/health` 200”代理指标。核心测试须过双编辑检验：坏行为必红，改内部必绿。功能改动追问 `feature-map`、驱动 CLI 与实跑产物；性能、延迟或 Eval 数字须核验限速器（*Why not double?*）、调优对等、理论上限、错误/空跑计数与多轮中位数，缺证判 `FAKE PROOF`。
+6. **刀 6：内环优先、缓冲聚类、Bot 甄别与单双向门**
+   内环未稳不盲目并行。范围外旧债记缓冲队列满 2 次再聚类拔根，不混入当前 Diff。Bot 评论按 `fix / dismiss / ask`（`bugbot-triage`）甄别，不盲从噪音改宽窄异常。区分可逆双向门与人类拍板的单向门（权限、计费、迁移、密钥、破坏性操作）。
 
 ## 标准输出契约（摘要）
 

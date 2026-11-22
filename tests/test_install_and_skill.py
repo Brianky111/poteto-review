@@ -61,6 +61,13 @@ class SkillContractAndInstallerTests(unittest.TestCase):
             ref_bytes = len((SKILL_ROOT / "references" / ref_name).read_bytes())
             self.assertLessEqual(ref_bytes, 12000, ref_name)
 
+        rubric_text = (SKILL_ROOT / "references" / "01-review-rubric-and-modes.md").read_text(encoding="utf-8")
+        self.assertIn("No is an acceptable answer", skill_text)
+        for marker in ("Attack the Premise", "Minimize Reader Load", "Explain the Number", "bugbot-triage"):
+            self.assertIn(marker, skill_text)
+        for marker in ("attack-the-premise", "minimize-reader-load", "explain-the-number", "bugbot-triage"):
+            self.assertIn(marker, rubric_text)
+
     def test_dry_run_install_idempotent_collision_and_uninstall(self) -> None:
         host_subdirs = (
             Path(".claude/skills"),

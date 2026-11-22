@@ -12,7 +12,7 @@
   - `#3` *We Built Grok Bot. Here Are Our 14 Best Bots*（Peter Yang 专访 Peng Zheng & Lauren Tan，2026-09-27）
   - `#4` *Are Agents About to Replace Software Engineering?*（MTS 访谈 Lauren Tan & Roshan Sadanani，2026-08-13）
   - `#5` *Lauren Tan Reveals How to Build a 21+ Agent GrokBot Team*（Colin 56 分钟屏共享 Q&A，2026-10-17 上传）
-- **上游工具链快照**：`vendor/pstack`（来自 `cursor/plugins`，`v0.15.46` @ `aaeb0ea3`），核心含 `correct`、`no-comments`、`architect`、`why`、`reflect`、`recall`、`statechart`、`create/maintain-verification-skill`、`create/maintain-formal-verification-skill`，`comment-sicko` 独立审查员，12 条原则技能与 `eval`/`hillclimb` Playbook。
+- **上游工具链快照**：`vendor/pstack`（来自 `cursor/plugins`，`v0.15.46` @ `aaeb0ea3`），已纳入 13 个核心技能（含 `correct`、`no-comments`、`architect`、`why`、`reflect`、`recall`、`statechart`、`unslop`、`benchmark-checklist`、`create/maintain-verification-skill`、`create/maintain-formal-verification-skill`），`comment-sicko` 独立审查员，24 条全部原则技能与 10 份 `poteto-mode` Playbook/参考（含 `eval`、`hillclimb`、`bug-fix`、`perf-issue`、`refactoring`、`prototype`、`runtime/trace-forensics`、`visual-parity` 与 `bugbot-triage`）。
 
 ---
 
@@ -46,13 +46,17 @@
 - **实情**：在修改 `pstack` 技能前，团队会在刻意隐藏评测意图的**中性命名目录**中并排运行不同模型候选体（Prompt 中绝不出现 `eval`、`test`、`judge`、`rubric`、`score`、`compare`、`benchmark`、`candidate`、`arena` 等字样，也不问候选体“你遵循了哪些原则”），由**另一模型家族的盲评裁判**根据真实代码结构与本地对话轨迹打分。配合 `hillclimb` 做多轮爬坡优化时，必须冻结评测集与回归门禁，每次只合一个过检改动，未显著超越基线噪音即完整回退。
 - **审阅迁移**：评审团队自研 Skill/Prompt 迭代流程时，直接把“同模型自吹自擂”“靠 Agent 自述而非查真实产物/轨迹打分”“改动后未跨模型盲测”判定为无效验证（`FAKE PROOF`）。
 
+### 8. Bugbot 审慎分流、质疑前提与抛弃式原型特区（`pstack poteto-mode`）
+- **实情**：上游 `poteto-mode` 从真实 PR 与排障沉淀出三项反直觉规则：1）`bugbot-triage` 总结，手搓替代浏览器原生 sticky/scroll 的逻辑 bug 报警几乎全真；文档与契约测试漂移争议花一条命令实跑即可证伪；但绝不能按机器人建议把 `ENOENT`（缺失二进制才走回退）扩写成吞掉真正运行错误的全捕获。2）`attack-the-premise` 规定同前提修复连续两次失败即停止打补丁，改为写明并实测该前提。3）`prototype` 明确“在隔离临时目录做带切换开关的多方案抛弃式原型”是**唯一允许反转最小 Diff 与测试门禁**的场景。
+- **审阅迁移**：审查机器人评审处理时核查是否按 `fix / dismiss / ask` 独立核证；遇连续修复仍报错的 Diff 追问共同前提；审到声明为抛弃式探索原型且隔离在生产源码外的目录时，只审设计决策清晰度而不套用生产代码护栏。
+
 ---
 
 ## 三、防教条误用红线（Anti-Dogma Checklist）
 
 在动笔给出最终审阅结论前，自检以下五条红线，任何一条不成立即收回该条批评：
 
-1. **禁止脱离上下文机械套禁令**：禁某 API、目录必须如何命名、全仓零注释、必须上 TLA+/Lean 均以特定痛点与收益成本比为前提；对于核心状态简单的 CRUD 模块或探索原型，应按分级需求给最小恰当约束。
+1. **禁止脱离上下文机械套禁令**：禁某 API、目录必须如何命名、全仓零注释、必须上 TLA+/Lean 均以特定痛点与收益成本比为前提；对于核心状态简单的 CRUD 模块，或隔离在生产 `source_roots` 之外用于选型的抛弃式原型（`prototype.md`），应按分级需求评估设计与决策清晰度，不硬套生产测试/抽象门槛。
 2. **禁止把“单次人类判断”骂成 `PROSE DEBT`**：唯有可确定性表达为结构、类型、Lint、验证脚本的规律，才算散文债；涉及业务取舍、审美调性、高危授权口径或外部沟通边界规则本就应留在极薄文档层。
 3. **禁止用“少写几行注释/多加两行 Lint”取代真架构问题**：如果架构自身存在命令式与声明式硬撞或状态分裂，单纯喊“删注释”只能掩盖冲突；优先指出那个导致补丁不断繁殖的一级结构缺陷。
 4. **禁止将范围外历史债务塞进当前 PR 阻塞合并**：旧仓推进靠“先划局部净土 + 棘轮锁老债 + 缓冲队列聚类除草”，不能要求一个局部修 Bug 的 PR 先把全仓重构一遍。

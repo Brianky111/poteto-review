@@ -2,7 +2,7 @@
 
 将 Lauren Tan（`@poteto`）在 AI Engineer CODE 2026、Matt Pocock 直播对谈、GrokBot 团队分享与 `pstack` 中的核心工程审阅方法论提炼为独立跨端只读审阅 Skill，支持 Claude Code、Cursor、Codex CLI、Agents 通用目录与 Pi。
 
-> **与 `general-workflow` 的分工**：`general-workflow` 负责从零或接手项目并**执行开发与护栏搭建**；`poteto-review` 聚焦**只读诊断式审阅（Review / Audit）**，可在**任意仓库**（无论是否接入 `.guardrails/`）独立运行，默认不修改被审源文件。
+> **与 `general-workflow` 的分工**：`general-workflow` 负责从零或接手项目并**执行开发与护栏搭建**；`poteto-review` 聚焦**只读诊断式审阅（Review / Audit）**，可在**任意仓库**（无论是否接入 `.guardrails/`）独立运行，默认不修改被审源文件，涵盖直率反迎合（Candor over Sycophancy）、`attack-the-premise`、`minimize-reader-load`、`explain-the-number` 与 `bugbot-triage` 审阅透镜。
 
 ## 目录结构
 

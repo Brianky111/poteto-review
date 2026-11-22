@@ -17,7 +17,7 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="backslashreplace")
 
 SKILL_NAME = "poteto-review"
-SKILL_VERSION = "1.0.0"
+SKILL_VERSION = "1.1.0"
 MANAGED_MARKER = ".poteto-review-managed.json"
 DEFAULT_SOURCE = Path(__file__).resolve().parent.parent
 
